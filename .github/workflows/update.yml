@@ -1,0 +1,23 @@
+name: Update App
+on:
+  push:
+    branches:
+      - 'v[0-9]+'
+      - 'v[0-9]+.[0-9]+'
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update on VPS
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VPS_HOST: 31.97.62.189
+          VPS_USER: ubuntu
+          APP_NAME: app2  # Change to google-custom-search for that app
+          REPO_URL: <app2-repo-url>  # Change for google-custom-search
+          PORT: 5002  # 5001 for google-custom-search
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ssh_key
+          chmod 600 ssh_key
+          ssh -i ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST \
+            "/home/ubuntu/update-app.sh $APP_NAME $REPO_URL ${GITHUB_REF##*/} $PORT"
