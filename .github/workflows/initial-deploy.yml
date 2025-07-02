@@ -1,0 +1,19 @@
+name: Initial Deploy App2
+on:
+  push:
+    branches:
+      - v1
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to VPS
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VPS_HOST: 31.97.62.189
+          VPS_USER: ubuntu
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ssh_key
+          chmod 600 ssh_key
+          ssh -i ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST \
+            "/home/ubuntu/initial-deploy-app.sh app2 <app2-repo-url> v1 5002 app2.softwares.calyxtech.net 'App 2'"
