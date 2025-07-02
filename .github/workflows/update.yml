@@ -13,9 +13,9 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VPS_HOST: 31.97.62.189
           VPS_USER: ubuntu
-          APP_NAME: app2  # Change to google-custom-search for that app
-          REPO_URL: <app2-repo-url>  # Change for google-custom-search
-          PORT: 5002  # 5001 for google-custom-search
+          APP_NAME: app2
+          REPO_URL: https://github.com/${{ github.repository }}.git
+          PORT: 5002
         run: |
           echo "$SSH_PRIVATE_KEY" > ssh_key
           chmod 600 ssh_key
