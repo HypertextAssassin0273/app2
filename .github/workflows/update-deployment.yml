@@ -2,13 +2,14 @@ name: Update App
 on:
   push:
     branches:
-      - 'v1.[0-9]+'           # Matches v1.1, v1.2, etc.
-      - 'v[2-9][0-9]*'       # Matches v2, v3, v10, v11, etc.
-      - 'v[2-9][0-9]*.[0-9]+' # Matches v2.0, v2.4, v10.1, etc.
-    branches-ignore:
-      - 'v1'                 # Explicitly ignore v1
-      - 'v0'                 # Explicitly ignore v0
-      - 'v0.[0-9]+'          # Explicitly ignore v0.1, v0.2, etc.
+      - update
+    #   - 'v1.[0-9]+'           # Matches v1.1, v1.2, etc.
+    #   - 'v[2-9][0-9]*'       # Matches v2, v3, v10, v11, etc.
+    #   - 'v[2-9][0-9]*.[0-9]+' # Matches v2.0, v2.4, v10.1, etc.
+    # branches-ignore:
+    #   - 'v1'                 # Explicitly ignore v1
+    #   - 'v0'                 # Explicitly ignore v0
+    #   - 'v0.[0-9]+'          # Explicitly ignore v0.1, v0.2, etc.
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -16,7 +17,7 @@ jobs:
       - name: Update on VPS
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          VPS_HOST: 31.97.62.189
+          VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ubuntu
           APP_NAME: app2
           REPO_URL: https://github.com/${{ github.repository }}.git
