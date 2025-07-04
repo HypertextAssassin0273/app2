@@ -16,14 +16,16 @@ jobs:
     steps:
       - name: Update on VPS
         env:
+          APP_NAME: app2
+          PORT: 5002
+          BRANCH: ${{ github.ref_name }}
+          REPO_URL: https://github.com/${{ github.repository }}.git
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
           VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ubuntu
-          APP_NAME: app2
-          REPO_URL: https://github.com/${{ github.repository }}.git
-          PORT: 5002
+          VPS_USER: ${{ secrets.VPS_USER }}
+          SCRIPT_PATH: ${{ secrets.SCRIPTS_DIR }}/update-app.sh
         run: |
           echo "$SSH_PRIVATE_KEY" > ssh_key
           chmod 600 ssh_key
           ssh -i ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST \
-            "/home/ubuntu/update-app.sh $APP_NAME $REPO_URL ${GITHUB_REF##*/} $PORT"
+            "$SCRIPT_PATH $APP_NAME $PORT $BRANCH $REPO_URL"
