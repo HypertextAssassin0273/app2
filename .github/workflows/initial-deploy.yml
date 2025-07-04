@@ -1,8 +1,9 @@
-name: Initial Deploy App2
+name: Initial Deployment & Configuration for Flask App on VPS Server (e.g. App2)
 on:
   push:
     branches:
-      - v1
+      - init
+      - init-deployment
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -10,7 +11,7 @@ jobs:
       - name: Deploy to VPS
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          VPS_HOST: 31.97.62.189
+          VPS_HOST: ${{ secrets.VPS_HOST }}
           VPS_USER: ubuntu
           REPO_URL: https://github.com/${{ github.repository }}.git
         run: |
