@@ -1,4 +1,4 @@
-name: Update App
+name: Deploy Updated Flask App on VPS Server (e.g. App2)
 on:
   push:
     branches:
