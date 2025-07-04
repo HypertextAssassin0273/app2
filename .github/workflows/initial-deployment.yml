@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - init
-      - init-deployment
+      # - v1
 jobs:
   deploy:
     runs-on: ubuntu-latest
