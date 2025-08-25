@@ -1,0 +1,35 @@
+name: Update Flask App on VPS
+on:
+  push:
+    branches:
+      - update
+
+jobs:
+  update:
+    runs-on: ${{ vars.SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
+    steps:
+      - name: Update App on VPS
+        env:
+          APP_NAME: ${{ github.event.repository.name }}
+          BRANCH: ${{ github.ref_name }}
+          REPO_URL: https://github.com/${{ github.repository }}.git
+          COMMIT_SHA: ${{ github.sha }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VPS_USER: ${{ vars.VPS_USER }}
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          SCRIPT_PATH: ${{ vars.SCRIPTS_DIR }}/update-app.sh
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ssh_key
+          chmod 600 ssh_key
+          ssh -i ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST \
+            "$SCRIPT_PATH $APP_NAME $BRANCH $REPO_URL $COMMIT_SHA"
+
+      - name: Clean Up
+        if: always()
+        run: |
+          rm -f ssh_key
+          echo "All temporary files have been removed."
+
+# NOTES:
+# 1) set the `SELF_HOSTED` variable to `true` in your repository settings to enable self-hosted runners.
+# 2) workflow used for updating existing app on existing VPS only.
