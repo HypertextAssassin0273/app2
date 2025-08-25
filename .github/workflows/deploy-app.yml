@@ -1,0 +1,40 @@
+name: Deploy Flask App on VPS
+on:
+  push:
+    branches:
+      - init
+      - infra
+      - init-infra
+
+jobs:
+  deploy:
+    runs-on: ${{ vars.SELF_HOSTED == 'true' && 'self-hosted' || 'ubuntu-latest' }}
+    steps:
+      - name: Deploy App on VPS
+        env:
+          APP_NAME: ${{ github.event.repository.name }}
+          DESCRIPTION: ${{ github.event.repository.description }}
+          PORT: ${{ vars.PORT }}
+          BRANCH: ${{ github.ref_name }}
+          REPO_URL: https://github.com/${{ github.repository }}.git
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          VPS_USER: ${{ vars.VPS_USER }}
+          VPS_HOST: ${{ vars.VPS_HOST }}
+          SCRIPT_PATH: ${{ vars.SCRIPTS_DIR }}/deploy-app.sh
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ssh_key
+          chmod 600 ssh_key
+          ssh -i ssh_key -o StrictHostKeyChecking=no $VPS_USER@$VPS_HOST \
+            "$SCRIPT_PATH $APP_NAME '$DESCRIPTION' $PORT $BRANCH $REPO_URL"
+
+      - name: Clean Up
+        if: always()
+        run: |
+          rm -f ssh_key
+          echo "All temporary files have been removed."
+
+# NOTES:
+# 1) use init branch to run in app-mode (i.e. only deploys app)
+# 2) use *infra branches to run in infra-mode (i.e. configures infrastructure + deploys app)
+# 3) set the `SELF_HOSTED` variable to `true` in your repository settings to enable self-hosted runners.
+# 4) workflow used for deploying only fresh app on either fresh or existing VPS.
